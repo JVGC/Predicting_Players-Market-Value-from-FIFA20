@@ -32,4 +32,6 @@ for offset in range(0, 327):
 
 
 data = data.drop_duplicates()
-data.to_csv('../Data/basic_data.csv', encoding = "utf-8")
+print(data)
+
+data.to_csv("../Data/basic_data.csv", encoding = "utf-8")

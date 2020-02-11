@@ -6,6 +6,7 @@ from bs4 import BeautifulSoup
 # Getting basic information from players
 
 basic_columns = ["ID", "Name", "Age", "Nationality", "Overall Rating", "Potential", "Team", "Value", "Wage Value", "Total Stats"]
+
 data_csv = pd.read_csv('../Data/basic_data.csv')
 basic_data = pd.DataFrame(data_csv,columns = basic_columns)
 
@@ -19,11 +20,9 @@ detailed_columns = ["Full Name", "Birth Date", "Height", "Weight", "Position #1"
                     "Acceleration", "Sprint Speed", "Agility","Reactions", "Balance", 
                     "Shot Power", "Jumping", "Stamina", "Strength", "Long Shots", 
                     "Aggression", "Interceptions", "Positioning", "Vision",
-                    "Penalties", "Composure", "Defensive Awareness", "Standing Tackle","Sliding Tackle", 
+                    "Penalties", "Composure", "Defensive Awareness", "Marking", "Standing Tackle","Sliding Tackle", 
                     "GK Diving", "GK Handling", "GK Kicking","GK Positioning", "GK Reflexes", "ID"]
-
 data_csv = pd.read_csv('../Data/detailed_data.csv')
-
 detailed_data = pd.DataFrame(data_csv, columns = detailed_columns)
 
 full_data = pd.merge(basic_data, detailed_data, how = 'inner', on = 'ID')

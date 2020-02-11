@@ -8,8 +8,10 @@ months_correlatives = {"Jan": "1", "Feb": "2", "Mar":"3", "Apr":"4", "May":"5",
                           "Jun": "6", "Jul": "7", "Aug": "8", "Sep": "9", "Oct": "10",
                           "Nov": "11", "Dec": "12"}
 
+basic_columns = ["ID", "Name", "Age", "Nationality", "Overall Rating", "Potential", "Team", "Value", "Wage Value", "Total Stats"]
+
 data_csv = pd.read_csv('../Data/basic_data.csv')
-data = pd.DataFrame(data_csv, columns = columns)
+data = pd.DataFrame(data_csv, columns = basic_columns)
 
 player_url = 'https://sofifa.com/player/'
 detailed_columns = ["Full Name", "Birth Date", "Height", "Weight", "Position #1", "Position #2", 
@@ -22,13 +24,16 @@ detailed_columns = ["Full Name", "Birth Date", "Height", "Weight", "Position #1"
                     "Acceleration", "Sprint Speed", "Agility","Reactions", "Balance", 
                     "Shot Power", "Jumping", "Stamina", "Strength", "Long Shots", 
                     "Aggression", "Interceptions", "Positioning", "Vision",
-                    "Penalties", "Composure", "Defensive Awareness", "Standing Tackle","Sliding Tackle", 
+                    "Penalties", "Composure", "Defensive Awareness", "Marking", "Standing Tackle","Sliding Tackle", 
                     "GK Diving", "GK Handling", "GK Kicking","GK Positioning", "GK Reflexes", "ID"]
 detailed_data = pd.DataFrame(index = range(0, data.count()[0]), columns = detailed_columns)
 detailed_data.ID = data.ID
+count = 0
 
+print(detailed_data.ID)
 for id in detailed_data.ID:
-    print(id)
+    if(count % 100 == 0):
+        print(id)
     full_player_url = player_url + str(id)
     source_code = requests.get(full_player_url)
     plain_text = source_code.text
@@ -77,14 +82,13 @@ for id in detailed_data.ID:
     lis = teams.find_all('div', class_ = 'column col-5' )
     
     # Informations about the player at current team
-    if(len(lis) == 0): #Player doesn't have current team
-        if(len(lis[0].find_all('li')) == 0):
-            lis = lis[1].find_all('li')
-        else:
-            lis = lis[0].find_all('li')
-
-
-        skill_set["Current Team"] = lis[0].text
+    if(len(lis) != 0): #Player have current team
+        if(len(lis) > 1):
+            if(len(lis[0].find_all('li')) == 0):
+                lis = lis[1].find_all('li')
+            else:
+                lis = lis[0].find_all('li')
+            skill_set["Current Team"] = lis[0].text
 
         for li in lis[3:]:
             label = li.find('label').text
@@ -93,7 +97,7 @@ for id in detailed_data.ID:
                 value = value.split(' ')
                 skill_set[label] = months_correlatives[value[0]] + '/' + value[1].split(',')[0] + '/' +value[2]
             else:
-                skill_set[label] = value
+                skill_set[label] = value 
     
     # Skill Set
     columns = article.find_all('div', class_ = "columns spacing")
@@ -122,7 +126,7 @@ for id in detailed_data.ID:
     
     for key, value in skill_set.items():
         detailed_data.loc[detailed_data.ID == id, key] = value
-    
+    count = count+1
 
 detailed_data.to_csv('../Data/detailed_data.csv', encoding = "utf-8")
 
